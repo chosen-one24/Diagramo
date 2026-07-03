@@ -40,8 +40,17 @@ async function registerUserController(req,res)  {
         {expiresIn:"1d"}
     )
 
-    res.cookie("token",token);
+    // res.cookie("token",token);
+     const isProduction = !!process.env.FRONTEND_URL;
 
+    res.cookie("token", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    
     return res.status(201).json({
         message:"User registered sucessfullly",
         user:{
@@ -89,7 +98,15 @@ async function loginController(req,res) {
     );
 
 
-    res.cookie("token",token);
+    // res.cookie("token",token);
+    const isProduction = !!process.env.FRONTEND_URL;
+
+    res.cookie("token", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
 
     console.log("CUrrent user ",user);
 
@@ -116,7 +133,14 @@ async function LogoutController(req,res) {
     }
 
 
-    res.clearCookie("token");
+    // res.clearCookie("token");
+   const isProduction = !!process.env.FRONTEND_URL;
+
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+    }); 
 
     return res.status(200).json({
         message:"Logout Sucessfull ! "
